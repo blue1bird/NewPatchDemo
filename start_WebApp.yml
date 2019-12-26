@@ -1,0 +1,13 @@
+---
+- name: Bring UP Web App
+  remote_user: root
+  hosts: all
+  become: true
+  ignore_errors: yes
+  
+  tasks: 
+  - name: Start Web App
+    service:
+      name: httpd
+      state: started
+      enabled: yes
