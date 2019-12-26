@@ -1,0 +1,32 @@
+---
+- name: Patch Linux system
+  remote_user: root
+  hosts: all
+  become: true
+  ignore_errors: yes
+
+  tasks:
+    - name: Check RHN or local repository connectivity
+      shell:
+        cmd: yum repolist  > /dev/null 2>&1; if [ $? -eq 0 ]; then echo "Repository found"; else echo "No repository found"; fi
+      register: repo_status
+                      
+    - name: Failed if no repository found
+      fail:
+        msg: "repository not found on {{ ansible_hostname }}"
+      when: repo_status.stdout != "Repository found"
+                                                                  
+    - name: Check httpd service running or not
+      shell: 
+        cmd: systemctl status httpd >/dev/null 2>&1; if [ $? -eq 0 ]; then echo 'httpd is running'; else echo 'httpd not running'; fi
+      register: httpd_status
+                                                                                
+    - name: Failed if httpd is running
+      fail:
+        msg: "httpd running on {{ ansible_hostname }}"
+      when: httpd_status.stdout != "httpd not running"
+   
+    - name: Apply patches
+      shell:
+        cmd: yum update -y
+      when: httpd_status.stdout == "httpd not running" and repo_status.stdout == "Repository found"
