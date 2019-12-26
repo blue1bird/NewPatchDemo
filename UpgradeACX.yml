@@ -1,0 +1,26 @@
+---
+- name: upgrade_ACX
+  remote_user: root
+  hosts: all
+  become: true
+  ignore_errors: yes
+  
+  tasks:
+  
+  - name: Stop ACX service
+    service:
+      name: vsftpd
+      state: stopped
+      ignore_errors: yes
+      
+  - name: Upgrade ACX package
+    yum:
+      name: vsftpd
+      state: latest
+      ignore_errors: yes
+      
+  - name: Start ACX service
+    service:
+      name: vsftpd
+      state: started
+      ignore_errors: yes
