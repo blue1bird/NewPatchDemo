@@ -1,0 +1,13 @@
+---
+- name: Remove nodes from monitoring
+  remote_user: root
+  hosts: all
+  become: true
+  ignore_errors: yes
+  
+  tasks:
+  - name: Stop splunk agent
+    service:
+      name: splunkd
+      state: stopped
+      enabled: no
