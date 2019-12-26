@@ -1,0 +1,12 @@
+---
+- name: Bring Down Web App
+  remote_user: root
+  hosts: all
+  become: true
+  ignore_errors: yes
+  
+  tasks:
+  - name: Stop Web App
+    service:
+      name: httpd
+      state: stopped
